@@ -1,0 +1,109 @@
+datasource db {
+  provider = "postgresql"
+  url      = env("DB_URL")
+}
+
+generator client {
+  provider = "prisma-client-js"
+}
+
+model Customer {
+  createdAt     DateTime          @default(now())
+  id            String            @id @default(cuid())
+  role          EnumCustomerRole?
+  subscriptions Subscription[]
+  updatedAt     DateTime          @updatedAt
+}
+
+model Order {
+  createdAt  DateTime   @default(now())
+  deliveries Delivery[]
+  id         String     @id @default(cuid())
+  payments   Payment[]
+  updatedAt  DateTime   @updatedAt
+}
+
+model Category {
+  createdAt DateTime @default(now())
+  id        String   @id @default(cuid())
+  updatedAt DateTime @updatedAt
+}
+
+model OrderItem {
+  createdAt DateTime @default(now())
+  id        String   @id @default(cuid())
+  updatedAt DateTime @updatedAt
+}
+
+model Product {
+  createdAt DateTime @default(now())
+  id        String   @id @default(cuid())
+  updatedAt DateTime @updatedAt
+}
+
+model Cart {
+  createdAt DateTime @default(now())
+  id        String   @id @default(cuid())
+  updatedAt DateTime @updatedAt
+}
+
+model Payment {
+  amount    Float?
+  createdAt DateTime           @default(now())
+  id        String             @id @default(cuid())
+  method    EnumPaymentMethod?
+  order     Order?             @relation(fields: [orderId], references: [id])
+  orderId   String?
+  status    EnumPaymentStatus?
+  updatedAt DateTime           @updatedAt
+}
+
+model Subscription {
+  active     Boolean?
+  createdAt  DateTime  @default(now())
+  customer   Customer? @relation(fields: [customerId], references: [id])
+  customerId String?
+  endDate    DateTime?
+  id         String    @id @default(cuid())
+  startDate  DateTime?
+  updatedAt  DateTime  @updatedAt
+}
+
+model Delivery {
+  address      String?
+  createdAt    DateTime            @default(now())
+  deliveryDate DateTime?
+  id           String              @id @default(cuid())
+  order        Order?              @relation(fields: [orderId], references: [id])
+  orderId      String?
+  status       EnumDeliveryStatus?
+  updatedAt    DateTime            @updatedAt
+}
+
+model User {
+  createdAt DateTime @default(now())
+  email     String?  @unique
+  firstName String?
+  id        String   @id @default(cuid())
+  lastName  String?
+  password  String
+  roles     Json
+  updatedAt DateTime @updatedAt
+  username  String   @unique
+}
+
+enum EnumCustomerRole {
+  Option1
+}
+
+enum EnumPaymentMethod {
+  Option1
+}
+
+enum EnumPaymentStatus {
+  Option1
+}
+
+enum EnumDeliveryStatus {
+  Option1
+}
